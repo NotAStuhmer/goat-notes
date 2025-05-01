@@ -9,6 +9,7 @@ import { useTransition } from "react";
 import { Button } from "./ui/button";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
+import { loginAction, signUpAction } from "@/actions/users";
 
 type Props = {
   type: "login" | "signUp";
@@ -22,7 +23,30 @@ function AuthForm({ type }: Props) {
   const [isPending, startTransition] = useTransition();
 
   const handleSubmit = (formData: FormData) => {
-    console.log("Form submitted.");
+    startTransition(async () => {
+      const email = formData.get("email") as string;
+      const password = formData.get("password") as string;
+
+      let errorMessage;
+
+      if (isLoginForm) {
+        errorMessage = (await loginAction(email, password)).errorMessage;
+        if (!errorMessage) {
+          toast.success("You have successfully logged in.");
+          router.replace("/");
+        } else {
+          toast.error("An error was encountered while logging in.");
+        }
+      } else {
+        errorMessage = (await signUpAction(email, password)).errorMessage;
+        if (!errorMessage) {
+          toast.success("Check your email for a confirmation link.");
+          router.replace("/");
+        } else {
+          toast.error("An error was encountered during the sign-up process.");
+        }
+      }
+    });
   };
 
   return (
@@ -44,7 +68,7 @@ function AuthForm({ type }: Props) {
           <Input
             id="password"
             name="password"
-            placeholder="Enter your password"
+            placeholder="Enter your password - it must be at least 8 characters, and contain at least one letter, one number, and one special character."
             type="password"
             required
             disabled={isPending}

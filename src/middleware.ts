@@ -16,12 +16,10 @@ export async function updateSession(request: NextRequest) {
     request,
   });
 
-  console.log("Middleware has run...");
-
   //   const supabase = createServerClient(
   //     process.env.SUPABASE_URL!,
   //     process.env.SUPABASE_ANON_KEY!,
-
+  //     {
   //       cookies: {
   //         getAll() {
   //           return request.cookies.getAll();
